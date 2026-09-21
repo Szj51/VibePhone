@@ -1,0 +1,4 @@
+# 统一按 LF 存储和检出。
+# 本机 core.autocrlf=true，若不锁定，克隆到 Windows 会把所有文件变成 CRLF，
+# 其中 start-macos.command 带 CRLF 会在 macOS 上报 "bad interpreter"。
+* text=auto eol=lf

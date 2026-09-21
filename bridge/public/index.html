@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="bridge-token" content="__BRIDGE_TOKEN__">
+  <title>Vibe Keyboard · 按键启动</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main>
+    <header><span class="brand">VIBE KEYBOARD</span><span id="connection" class="pill">连接中</span></header>
+    <div class="eyebrow">第一步 / 按键启动</div>
+    <h1>两个按键，<br>开始你的下一次创作。</h1>
+    <p class="intro">点击这个页面，再按数字键。也可以直接点击下方卡片。</p>
+    <div id="test-banner" class="banner" hidden>测试模式 · 只验证按键和通信，不会打开应用。</div>
+    <section class="cards" aria-label="应用启动器">
+      <button id="codex" class="card" disabled><span class="card-top"><kbd id="key-codex">1</kbd><span class="arrow">↗</span></span><strong>Codex</strong><span>打开桌面应用窗口</span><small>已有窗口时尝试新建窗口，并检查结果</small></button>
+      <button id="claude" class="card warm" disabled><span class="card-top"><kbd id="key-claude">2</kbd><span class="arrow">↗</span></span><strong>Claude Code</strong><span id="terminal-label">新建终端并运行 claude</span><small>从用户主目录开始</small></button>
+    </section>
+    <div id="focus-status" class="focus-status">点击页面后，数字键才会生效。</div>
+    <section class="activity" aria-labelledby="activity-title"><div class="section-title"><h2 id="activity-title">启动记录</h2><span>本次运行</span></div><p id="message" role="status" aria-live="polite">等待按键。</p><ol id="events"></ol></section>
+    <footer><span>前台触发 · 长按只触发一次</span><span>Windows / macOS</span></footer>
+  </main>
+  <script type="module" src="/app.mjs"></script>
+</body>
+</html>

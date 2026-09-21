@@ -1,0 +1,13 @@
+{
+  "name": "vibe-keyboard-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Foreground-only keyboard launcher for Codex desktop and Claude Code",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node bridge.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "node bridge.mjs --check"
+  }
+}

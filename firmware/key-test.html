@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>VibePhone 按键测试</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0; padding: 40px 28px;
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: #f6f7f9; color: #202b36;
+  }
+  main { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 6px; }
+  .sub { font-size: 13px; color: #6b7a89; margin-bottom: 26px; line-height: 1.7; }
+  .stage {
+    background: #fff; border: 1px solid #dde4ea; border-radius: 16px;
+    padding: 34px; text-align: center; margin-bottom: 22px;
+  }
+  #big {
+    font: 700 62px/1.1 ui-monospace, "Cascadia Mono", Consolas, monospace;
+    letter-spacing: 2px; color: #9aa7b4; transition: color .08s;
+  }
+  #big.hit { color: #1f7a4d; }
+  #sub { font-size: 14px; color: #74838f; margin-top: 12px; min-height: 22px; }
+  .hint { font-size: 12px; color: #96a2ad; margin-top: 20px; }
+  .bar { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+  .pill {
+    font-size: 12px; padding: 6px 12px; border-radius: 20px;
+    background: #e7edf2; color: #5d7183;
+  }
+  .pill.on { background: #e0eee6; color: #25684a; }
+  button {
+    margin-left: auto; font: inherit; font-size: 12px; cursor: pointer;
+    padding: 6px 14px; border: 1px solid #d3dce4; border-radius: 8px;
+    background: #fff; color: #4b5c6b;
+  }
+  ol { list-style: none; padding: 0; margin: 0; }
+  li {
+    display: grid; grid-template-columns: 105px 96px 1fr;
+    gap: 12px; font-size: 13px; padding: 11px 2px;
+    border-bottom: 1px solid #e8ecef;
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  li time { color: #8b98a3; }
+  li .f { font-weight: 600; }
+  li.hit .f { color: #1f7a4d; }
+  .empty { font-size: 13px; color: #9aa7b4; padding: 18px 2px; font-family: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <h1>VibePhone 按键测试</h1>
+  <p class="sub">
+    先点一下这个页面，让页面获得焦点，然后按板子上的按键。<br>
+    预期：<b>GPIO4 / BOOT 键 → F13</b>，<b>GPIO5 → F14</b>。
+  </p>
+
+  <div class="stage">
+    <div id="big">—</div>
+    <div id="sub">等待按键…</div>
+    <div class="hint">F13 / F14 在普通软件里没有默认行为，只有这类测试页能直接看到。</div>
+  </div>
+
+  <div class="bar">
+    <span id="status" class="pill">页面未获得焦点</span>
+    <span id="count" class="pill">0 次</span>
+    <button id="clear">清空记录</button>
+  </div>
+
+  <ol id="log"><li class="empty">还没有收到任何按键。</li></ol>
+</main>
+
+<script>
+const big    = document.getElementById('big');
+const sub    = document.getElementById('sub');
+const log    = document.getElementById('log');
+const status = document.getElementById('status');
+const count  = document.getElementById('count');
+let n = 0;
+
+const NAMES = {
+  F13: 'F13', F14: 'F14', F15: 'F15', F16: 'F16',
+};
+const VK = { F13: 124, F14: 125, F15: 126, F16: 127 };
+
+function describe(e) {
+  const k = e.key;
+  if (NAMES[k]) return { label: k, note: `虚拟键码 VK=${VK[k]}（0x${VK[k].toString(16).toUpperCase()}）` };
+  if (k === ' ') return { label: 'Space', note: '空格' };
+  if (k.length === 1) return { label: k, note: `字符「${k}」` };
+  return { label: k, note: '' };
+}
+
+function flash(label) {
+  big.textContent = label;
+  big.classList.add('hit');
+  setTimeout(() => big.classList.remove('hit'), 130);
+}
+
+function addRow(e) {
+  const { label, note } = describe(e);
+  const empty = log.querySelector('.empty');
+  if (empty) empty.remove();
+
+  const li = document.createElement('li');
+  li.className = 'hit';
+  const t = document.createElement('time');
+  t.textContent = new Date().toLocaleTimeString('zh-CN', { hour12: false }) +
+                  '.' + String(new Date().getMilliseconds()).padStart(3, '0');
+  const f = document.createElement('span');
+  f.className = 'f';
+  f.textContent = label;
+  const d = document.createElement('span');
+  d.textContent = note + `　code=${e.code}　keyCode=${e.keyCode}`;
+  li.append(t, f, d);
+  log.prepend(li);
+  while (log.children.length > 60) log.lastChild.remove();
+
+  n += 1;
+  count.textContent = n + ' 次';
+  sub.textContent = '收到：' + label;
+}
+
+document.addEventListener('keydown', e => {
+  e.preventDefault();          // 阻止 F13/F14 被浏览器吞掉或触发别的行为
+  addRow(e);
+});
+
+function focusState() {
+  const on = document.hasFocus();
+  status.textContent = on ? '页面已获得焦点，可以按键' : '页面未获得焦点，先点一下页面';
+  status.className = 'pill' + (on ? ' on' : '');
+}
+window.addEventListener('focus', focusState);
+window.addEventListener('blur', focusState);
+document.getElementById('clear').addEventListener('click', () => {
+  log.innerHTML = '<li class="empty">还没有收到任何按键。</li>';
+  n = 0; count.textContent = '0 次'; big.textContent = '—'; sub.textContent = '等待按键…';
+});
+focusState();
+</script>
+</body>
+</html>

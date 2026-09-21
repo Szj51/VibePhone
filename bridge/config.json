@@ -1,0 +1,17 @@
+{
+  "port": 17653,
+  "keys": { "codex": "F13", "claude": "F14" },
+  "cooldownMs": 600,
+  "codex": {
+    "windowsExecutable": "",
+    "windowsStartAppNames": ["Codex", "ChatGPT"],
+    "windowsProcessNames": ["ChatGPT", "Codex"],
+    "macApp": "Codex",
+    "newWindowShortcut": "shift+n"
+  },
+  "device": {
+    "enabled": true,
+    "port": "",
+    "buttons": ["codex", "claude"]
+  }
+}
